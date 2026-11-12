@@ -1,0 +1,32 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1
+
+spring:
+  application:
+    name: eventify-pro
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/eventify_db
+    username: postgres
+    password: REMOVED_PASSWORD
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+jwt:
+  secret: REMOVED_SECRET
+  expiration: 86400000 # 1 Gün (milisaniye cinsinden)
