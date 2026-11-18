@@ -7,10 +7,14 @@ spring:
   application:
     name: eventify-pro
 
+  # Gizli değerler proje kökündeki .env dosyasından okunur (git'e girmez, bkz. .env.example)
+  config:
+    import: optional:file:.env[.properties]
+
   datasource:
-    url: jdbc:postgresql://localhost:5432/eventify_db
-    username: postgres
-    password: REMOVED_PASSWORD
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/eventify_db}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -28,5 +32,5 @@ spring:
       port: 6379
 
 jwt:
-  secret: REMOVED_SECRET
-  expiration: 86400000 # 1 Gün (milisaniye cinsinden)
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:86400000} # 1 Gün (milisaniye cinsinden)

@@ -5,9 +5,9 @@ services:
     image: postgres:15-alpine
     container_name: eventify_postgres
     environment:
-      POSTGRES_DB: eventify_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: REMOVED_PASSWORD
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
