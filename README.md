@@ -19,9 +19,7 @@ Etkinlik yönetimi için geliştirilmiş bir **Spring Boot REST API**'si. Kullan
 - [Veri Modeli](#veri-modeli)
 - [API Uç Noktaları](#api-uç-noktaları)
 - [Geliştirme Aşamaları](#geliştirme-aşamaları)
-- [Ortam Değişkenleri](#ortam-değişkenleri)
 - [Proje Yapısı](#proje-yapısı)
-- [Yol Haritası](#yol-haritası)
 
 ---
 
@@ -308,25 +306,6 @@ Proje, her biri bir öncekinin üzerine kurulan 6 aşamada geliştirildi.
 - `.dockerignore` ile `.env` ve derleme çıktıları imaja girmez.
 - PostgreSQL ve Redis için `healthcheck`; uygulama ikisi de hazır olmadan başlamaz (`depends_on: service_healthy`).
 - Gizli bilgiler (DB şifresi, JWT anahtarı) koddan çıkarılıp ortam değişkenlerine taşındı.
-
----
-
-## Ortam Değişkenleri
-
-Değerler `.env` dosyasından okunur (şablon: [`.env.example`](.env.example)).
-
-| Değişken | Açıklama | Varsayılan |
-|---|---|---|
-| `DB_URL` | JDBC bağlantı adresi | `jdbc:postgresql://localhost:5432/eventify_db` |
-| `DB_NAME` | Veritabanı adı (Docker'daki Postgres için) | — |
-| `DB_USERNAME` | Veritabanı kullanıcısı | — |
-| `DB_PASSWORD` | Veritabanı şifresi | — |
-| `JWT_SECRET` | Base64 kodlu, en az 256 bit imza anahtarı | — |
-| `JWT_EXPIRATION` | Token geçerlilik süresi (ms) | `86400000` (1 gün) |
-| `REDIS_HOST` | Redis adresi | `localhost` |
-| `REDIS_PORT` | Redis portu | `6379` |
-
-> Docker Compose, uygulama container'ı için `DB_URL` ve `REDIS_HOST` değerlerini servis adlarıyla (`postgres`, `redis`) otomatik olarak ezer. Container içinde `localhost` uygulamanın kendisini gösterdiği için bu gereklidir. Bu sayede aynı `.env` dosyası hem IDE'den hem Docker'dan çalıştırırken kullanılabilir.
 
 ---
 
