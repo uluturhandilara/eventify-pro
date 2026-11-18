@@ -5,6 +5,7 @@ import com.eventify.eventifypro.mapper.EventMapper;
 import com.eventify.eventifypro.repository.EventRepository;
 import com.eventify.eventifypro.service.EventService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ public class EventServiceImpl implements EventService {
                 .map(eventMapper::toResponseDto);
     }
 
+    @Cacheable(value = "events", key = "#id")
     @Override
     public EventResponseDto getEventById(Long id) {
         var event = eventRepository.findById(id)
