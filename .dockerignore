@@ -1,0 +1,20 @@
+# Derleme çıktıları (imaj içinde yeniden üretilir)
+target/
+${project.build.directory}/
+
+# Gizli bilgiler imaja ASLA girmemeli; değerler çalışma anında compose'dan verilir
+.env
+.env.*
+
+# IDE ve git
+.idea/
+*.iml
+.vscode/
+.git/
+.gitignore
+
+# Docker dosyalarının kendisi ve dokümanlar
+Dockerfile
+.dockerignore
+docker-compose*.yml
+HELP.md
