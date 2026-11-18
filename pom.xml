@@ -127,10 +127,17 @@
             <artifactId>spring-boot-starter-aspectj</artifactId>
         </dependency>
 
+        <!-- Cache soyutlaması (@Cacheable); Redis'e bağlanması application.yaml'daki spring.cache ayarıyla -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+
+        <!-- Swagger UI: springdoc 3.x Spring Boot 4 içindir (2.x Boot 3 içindir, burada çalışmaz) -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.3.0</version>
+            <version>3.2.0</version>
         </dependency>
     </dependencies>
 
