@@ -48,3 +48,10 @@ application-local.properties
 
 # Yanlış Maven/IDE ayarıyla oluşan klasör
 ${project.build.directory}/
+
+### Frontend (Node / Vite) ###
+node_modules/
+frontend/dist/
+*.local
+npm-debug.log*
+.DS_Store

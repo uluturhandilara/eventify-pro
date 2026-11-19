@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+/*
+  Tasarım sistemi (Tailwind v4 "@theme" ile):
+  - brand  : ana mavi (butonlar, aktif menü, linkler)
+  - accent : mor (grafik/ikinci vurgu)
+  - mint   : turkuaz (başarı/üçüncü vurgu)
+  Preline tarzı: beyaz kartlar, açık gri zemin, ince kenarlıklar, yumuşak gölgeler.
+*/
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --color-brand-50: #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-200: #bfdbfe;
+  --color-brand-300: #93c5fd;
+  --color-brand-400: #60a5fa;
+  --color-brand-500: #3b82f6;
+  --color-brand-600: #2563eb;
+  --color-brand-700: #1d4ed8;
+  --color-brand-800: #1e40af;
+  --color-brand-900: #1e3a8a;
+
+  --color-accent-100: #ede9fe;
+  --color-accent-400: #a78bfa;
+  --color-accent-500: #8b5cf6;
+  --color-accent-600: #7c3aed;
+
+  --color-mint-100: #ccfbf1;
+  --color-mint-500: #14b8a6;
+  --color-mint-600: #0d9488;
+
+  --shadow-card: 0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.06);
+  --radius-card: 0.875rem;
+}
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+  body {
+    @apply bg-gray-50 text-gray-800;
+  }
+  ::selection {
+    @apply bg-brand-100 text-brand-800;
+  }
+}
+
+/*
+  Tailwind v4'te tekrar kullanılan bileşen sınıfları "@utility" ile tanımlanır;
+  böylece hem HTML'de hem de başka bir @apply içinde kullanılabilirler.
+*/
+@utility card {
+  @apply rounded-[var(--radius-card)] border border-gray-200 bg-white shadow-[var(--shadow-card)];
+}
+
+@utility input {
+  @apply block w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-800
+    placeholder:text-gray-400 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15
+    disabled:cursor-not-allowed disabled:bg-gray-50;
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium
+    transition focus:outline-none focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+@utility btn-primary {
+  @apply btn bg-brand-600 text-white hover:bg-brand-700 focus:ring-brand-500/25;
+}
+
+@utility btn-ghost {
+  @apply btn border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 focus:ring-gray-200;
+}

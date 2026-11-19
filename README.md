@@ -1,9 +1,12 @@
 # EventifyPro
 
-Etkinlik yönetimi için geliştirilmiş bir **Spring Boot REST API**'si. Kullanıcılar kayıt olup JWT ile giriş yapar; etkinlikler kategorilere göre listelenir, aranır ve sayfalanır. Sık okunan etkinlik detayları Redis'te önbelleğe alınır. Uygulama, veritabanı ve önbellek tek bir `docker compose up` komutuyla ayağa kalkar.
+Etkinlik yönetimi için geliştirilmiş **full-stack** bir uygulama: **Spring Boot REST API** (backend) ve **React** arayüzü (frontend) aynı repoda, ayrı klasörlerde yaşar. Kullanıcılar kayıt olup JWT ile giriş yapar; etkinlikler kategorilere göre listelenir, aranır ve sayfalanır. Sık okunan etkinlik detayları Redis'te önbelleğe alınır. Frontend, backend, veritabanı ve önbellek tek bir `docker compose up` komutuyla ayağa kalkar.
 
 ![Java](https://img.shields.io/badge/Java-21-orange?logo=openjdk)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.2-6DB33F?logo=springboot)
+![React](https://img.shields.io/badge/React-19-20232A?logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)
+![Tailwind](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql)
 ![Redis](https://img.shields.io/badge/Redis-7-DC382D?logo=redis)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)
@@ -28,7 +31,9 @@ Etkinlik yönetimi için geliştirilmiş bir **Spring Boot REST API**'si. Kullan
 ### Gereksinimler
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Docker Compose dahil)
-- Lokal geliştirme için ayrıca: [JDK 21](https://adoptium.net/temurin/releases/?version=21) (Maven kurmanıza gerek yok, proje Maven Wrapper ile gelir)
+- Lokal geliştirme için ayrıca:
+  - Backend: [JDK 21](https://adoptium.net/temurin/releases/?version=21) (Maven kurmanıza gerek yok, proje Maven Wrapper ile gelir)
+  - Frontend: [Node.js 22](https://nodejs.org/) (npm ile birlikte gelir)
 
 ### 1. Ortam değişkenlerini hazırlayın
 
@@ -50,7 +55,7 @@ openssl rand -base64 64
 docker compose up -d --build
 ```
 
-Bu komut sırasıyla PostgreSQL ve Redis'i başlatır, ikisi de sağlıklı (*healthy*) olunca uygulamayı ayağa kaldırır. Durumu izlemek için:
+Bu komut sırasıyla PostgreSQL ve Redis'i başlatır, ikisi sağlıklı (*healthy*) olunca backend'i, backend sağlıklı olunca frontend'i ayağa kaldırır. Ardından tarayıcıda **http://localhost:3001** adresini açın. Durumu izlemek için:
 
 ```bash
 docker compose ps
@@ -60,20 +65,35 @@ docker compose ps
 docker compose logs -f app
 ```
 
-### 2b. Uygulamayı IDE'den / lokalden çalıştırın
+> Frontend portu 3001'dir. Bu port makinenizde doluysa `.env` dosyasına `FRONTEND_PORT=4000` gibi bir satır ekleyin.
 
-Yalnızca veritabanı ve önbelleği Docker'da başlatıp uygulamayı IntelliJ veya terminalden çalıştırabilirsiniz:
+### 2b. Geliştirme modunda çalıştırın (IDE / terminal)
+
+Geliştirirken backend ve frontend'i ayrı ayrı, kendi araçlarıyla çalıştırmak daha pratiktir: kodu kaydettiğiniz anda sayfa yenilenir. Yalnızca veritabanı ve önbellek Docker'da kalır.
+
+**Terminal 1: veritabanı ve önbellek**
 
 ```bash
 docker compose up -d postgres redis
 ```
 
+**Terminal 2: backend (8080)**
+
 ```bash
-./mvnw spring-boot:run
+cd backend && ./mvnw spring-boot:run
 ```
 
-> Uygulama `.env` dosyasını `spring.config.import` ile kendisi okur, IDE'de ek ayar gerekmez.
-> Docker'daki `app` container'ı çalışıyorsa önce `docker compose stop app` ile durdurun, aksi halde 8080 portu çakışır.
+**Terminal 3: frontend (5173)**
+
+```bash
+cd frontend && npm install && npm run dev
+```
+
+Tarayıcıda **http://localhost:5173** adresini açın.
+
+> Backend `.env` dosyasını `spring.config.import` ile kendisi okur, IDE'de ek ayar gerekmez. IntelliJ'de projeyi `backend/pom.xml` üzerinden açın.
+> Frontend'in `/api/...` istekleri Vite'ın geliştirme proxy'si ile 8080'e iletilir (bkz. `frontend/vite.config.ts`); bu sayede CORS ayarı gerekmez.
+> Docker'daki `app` ve `frontend` container'ları çalışıyorsa önce `docker compose stop app frontend` ile durdurun, aksi halde 8080 portu çakışır.
 
 ### Durdurmak
 
@@ -87,13 +107,14 @@ Veritabanı verisini de silmek isterseniz `docker compose down -v` kullanın.
 
 ## Önemli Linkler
 
-Uygulama çalışırken (tüm yollar `/api/v1` ön ekiyle başlar):
+Uygulama çalışırken (API yolları `/api/v1` ön ekiyle başlar):
 
-| Ne | Link |
-|---|---|
-| Swagger UI (interaktif API dokümantasyonu) | http://localhost:8080/api/v1/swagger-ui/index.html |
-| OpenAPI JSON | http://localhost:8080/api/v1/v3/api-docs |
-| API kök adresi | http://localhost:8080/api/v1 |
+| Ne | Docker ile | Geliştirme modunda |
+|---|---|---|
+| **Web arayüzü** | http://localhost:3001 | http://localhost:5173 |
+| Swagger UI (interaktif API dokümantasyonu) | http://localhost:8080/api/v1/swagger-ui/index.html | aynı |
+| OpenAPI JSON | http://localhost:8080/api/v1/v3/api-docs | aynı |
+| API kök adresi | http://localhost:8080/api/v1 | aynı |
 
 ---
 
@@ -114,13 +135,33 @@ Uygulama çalışırken (tüm yollar `/api/v1` ön ekiyle başlar):
 | **Spring AOP (AspectJ)** | Kesişen ilgiler | Servis metotlarının çalışma süresi, iş koduna dokunmadan tek bir yerden loglanır. |
 | **SpringDoc OpenAPI** | Dokümantasyon | Kod üzerinden otomatik Swagger dokümantasyonu üretir; API'yi tarayıcıdan denemeyi sağlar. |
 | **RestClient** | Dış servis çağrısı | Spring'in modern, akıcı (*fluent*) HTTP istemcisi. |
-| **Docker + Docker Compose** | Paketleme ve çalıştırma | Uygulama, veritabanı ve önbellek her makinede aynı şekilde, tek komutla çalışır. |
+| **React 19 + TypeScript** | Arayüz | Bileşen tabanlı, en yaygın kullanılan arayüz kütüphanesi; TypeScript ile backend DTO'ları tip güvenli şekilde eşlenir. |
+| **Vite** | Frontend derleme ve geliştirme sunucusu | Anında yenilenen (*hot reload*) geliştirme deneyimi; geliştirme proxy'si CORS derdini ortadan kaldırır. |
+| **Tailwind CSS 4** | Stil | Hazır yardımcı sınıflarla hızlı ve tutarlı tasarım; `@theme` ile proje renk paleti tek yerden tanımlanır. |
+| **React Router** | Sayfa yönlendirme | Tek sayfa uygulamada (SPA) `/events/5` gibi yollar; korumalı rotalar giriş yapmayanı login'e yollar. |
+| **Nginx** | Frontend'i sunma | Üretimde derlenmiş React dosyalarını verir ve `/api/` isteklerini backend container'ına iletir. |
+| **Docker + Docker Compose** | Paketleme ve çalıştırma | Frontend, backend, veritabanı ve önbellek her makinede aynı şekilde, tek komutla çalışır. |
 
 ---
 
 ## Mimari
 
-Proje klasik **katmanlı mimari** ile kurgulandı. Her katmanın tek bir sorumluluğu vardır:
+### Genel görünüm: frontend ve backend nasıl konuşur?
+
+Frontend ve backend **iki ayrı program**dır; aralarındaki tek bağ HTTP'dir. Tarayıcı asla doğrudan `8080`'e gitmez: hem geliştirmede (Vite proxy) hem üretimde (Nginx) `/api/...` istekleri aynı adres üzerinden backend'e iletilir. Böylece tarayıcı tek bir site görür ve **CORS** hiç devreye girmez.
+
+```mermaid
+flowchart LR
+    Browser([Tarayıcı]) -->|"/ (React dosyaları)"| Nginx[Nginx / Vite]
+    Browser -->|"/api/v1/... + Bearer token"| Nginx
+    Nginx -->|"/api/ proxy"| App[Spring Boot :8080]
+    App --> DB[(PostgreSQL)]
+    App <--> Cache[(Redis)]
+```
+
+### Backend: katmanlı mimari
+
+Backend klasik **katmanlı mimari** ile kurgulandı. Her katmanın tek bir sorumluluğu vardır:
 
 ```mermaid
 flowchart LR
@@ -146,6 +187,14 @@ flowchart LR
 2. Sonraki isteklerde `Authorization: Bearer <token>` başlığını gönderir.
 3. `JwtAuthenticationFilter` token'ı doğrular ve kullanıcıyı `SecurityContext`'e yerleştirir.
 4. Token yoksa veya geçersizse korunan uç noktalar `403 Forbidden` döner.
+
+### Frontend: yapı ve oturum yönetimi
+
+- **`api/client.ts`** tüm isteklerin geçtiği tek kapıdır: temel adresi ekler, `localStorage`'daki token'ı `Authorization` başlığına koyar, backend'in `ErrorResponse` gövdesini okunabilir hata mesajına çevirir. 401/403 gelirse token'ı siler ve oturumu düşürür.
+- **`context/AuthContext.tsx`** oturum durumunu uygulamanın her yerine dağıtır. Token tarayıcıda saklandığı için sayfa yenilense bile oturum kalır; süresi dolmuş token açılışta temizlenir.
+- **Korumalı rotalar** (`RequireAuth`): giriş yapmamış kullanıcı `/events`'e gitmeye çalışırsa `/login`'e yönlendirilir, giriş yapınca kaldığı sayfaya döner.
+- **Sayfalar**: `LoginPage`, `RegisterPage`, `EventsPage` (arama, sıralama, sayfalama, özet kartları) ve `EventDetailPage`.
+- **Tasarım**: Preline tarzı açık tema; mavi ana renk, mor ve turkuaz vurgular. Renkler `index.css` içinde `@theme` ile tek yerden tanımlanır. Mobilde kenar çubuğu çekmeceye dönüşür.
 
 ---
 
@@ -262,7 +311,7 @@ Tüm hatalar `GlobalExceptionHandler` tarafından aynı yapıda döndürülür, 
 
 ## Geliştirme Aşamaları
 
-Proje, her biri bir öncekinin üzerine kurulan 6 aşamada geliştirildi.
+Proje, her biri bir öncekinin üzerine kurulan 7 aşamada geliştirildi.
 
 ### Aşama 1: Proje Kurulumu ve Veritabanı Mimarisi
 
@@ -307,12 +356,45 @@ Proje, her biri bir öncekinin üzerine kurulan 6 aşamada geliştirildi.
 - PostgreSQL ve Redis için `healthcheck`; uygulama ikisi de hazır olmadan başlamaz (`depends_on: service_healthy`).
 - Gizli bilgiler (DB şifresi, JWT anahtarı) koddan çıkarılıp ortam değişkenlerine taşındı.
 
+### Aşama 7: Frontend (React)
+
+- Repo **monorepo** yapısına geçirildi: backend `backend/`, arayüz `frontend/` klasöründe.
+- **Vite + React 19 + TypeScript + Tailwind CSS 4** ile arayüz: giriş, kayıt, etkinlik listesi (arama, sıralama, sayfalama) ve etkinlik detayı.
+- JWT tabanlı oturum: token `localStorage`'da tutulur, her isteğe otomatik eklenir, korumalı rotalar giriş yapmayanı login'e yollar.
+- Geliştirmede Vite proxy, üretimde Nginx `/api/` isteklerini backend'e iletir; CORS ayarına gerek kalmaz.
+- Frontend için çok aşamalı `Dockerfile` (Node ile derleme → Nginx ile sunma) ve compose'a `frontend` servisi; backend `healthcheck` aldı, frontend onu bekler.
+
 ---
 
 ## Proje Yapısı
 
 ```
-src/main/java/com/eventify/eventifypro
+EventifyPro/
+├── backend/                # Spring Boot REST API
+│   ├── src/main/java/com/eventify/eventifypro/   (paketler aşağıda)
+│   ├── pom.xml
+│   └── Dockerfile          # JDK ile derle → JRE Alpine'da çalıştır
+├── frontend/               # React + Vite + Tailwind arayüzü
+│   ├── src/
+│   │   ├── api/            # client.ts (tek HTTP kapısı), auth.ts, events.ts
+│   │   ├── components/     # Layout (kenar çubuğu), EventCard, Pagination, ui
+│   │   ├── context/        # AuthContext: oturum durumu
+│   │   ├── hooks/          # useAuth
+│   │   ├── lib/            # jwt.ts, format.ts (tarih/para biçimleme)
+│   │   ├── pages/          # Login, Register, Events, EventDetail
+│   │   └── types.ts        # Backend DTO'larının TS karşılıkları
+│   ├── vite.config.ts      # geliştirme proxy'si (/api → 8080)
+│   ├── nginx.conf          # üretim: statik dosyalar + /api proxy
+│   └── Dockerfile          # Node ile derle → Nginx ile sun
+├── docker-compose.yml      # frontend + app + postgres + redis
+├── .env / .env.example
+└── README.md
+```
+
+Backend paketleri:
+
+```
+backend/src/main/java/com/eventify/eventifypro
 ├── aop/            # LoggingAspect: metot çalışma süresi ölçümü
 ├── common/         # BaseEntity: ortak id ve audit alanları
 ├── config/         # RedisConfig: önbellek ve RedisTemplate ayarları
